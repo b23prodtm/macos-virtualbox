@@ -17,7 +17,7 @@ function set_variables() {
 # Customize the installation by setting these variables:
 vm_name="macOS"                  # name of the VirtualBox virtual machine
 macOS_release_name="Catalina"    # install "HighSierra" "Mojave" or "Catalina"
-storage_size=80000               # VM disk image size in MB, minimum 22000
+storage_size=100000               # VM disk image size in MB, minimum 22000
 storage_format="vdi"             # VM disk image file format, "vdi" or "vmdk"
 cpu_count=2                      # VM CPU cores, minimum 2
 memory_size=4096                 # VM RAM in MB, minimum 2048
@@ -31,14 +31,15 @@ resolution="1280x800"            # VM display resolution
 # message if they do not match the genuine Mac exactly.
 # Non-genuine yet genuine-like parameters usually work.
 
+# RUN . macos-guenuine-guest.sh
 #   system_profiler SPHardwareDataType
-DmiSystemFamily="MacBook Pro"        # Model Name
-DmiSystemProduct="MacBookPro11,2"    # Model Identifier
-DmiSystemSerial="NO_DEVICE_SN"       # Serial Number (system)
-DmiSystemUuid="CAFECAFE-CAFE-CAFE-CAFE-DECAFFDECAFF" # Hardware UUID
-DmiBIOSVersion="string:MBP7.89"      # Boot ROM Version
+DmiSystemFamily="iMac"        # Model Name
+DmiSystemProduct="iMac9,1"    # Model Identifier
+DmiSystemSerial="NO_SYSTEM_SN"       # Serial Number (system)
+DmiSystemUuid="1F3CEFAA-DECC-56D3-BEE8-BD89CC667AC4" # Hardware UUID
+DmiBIOSVersion="string:IM91.008D.B08"      # Boot ROM Version
 DmiOEMVBoxVer="string:1"             # Apple ROM Info - left of the first dot
-DmiOEMVBoxRev="string:.23.45.6"      # Apple ROM Info - first dot and onward
+DmiOEMVBoxRev="string:.44f0"      # Apple ROM Info - first dot and onward
 #   ioreg -l | grep -m 1 board-id
 DmiBoardProduct="Mac-3CBD00234E554E41"
 #   nvram 4D1EDE05-38C7-4A6A-9CC6-4BCCA8B38C14:MLB
@@ -387,11 +388,11 @@ fi
 # Attempt to create new virtual machine named "${vm_name}"
 function create_vm() {
 print_dimly "stage: create_vm"
-if [[ -n "$( VBoxManage createvm --name "${vm_name}" --ostype "MacOS1013_64" --register 2>&1 >/dev/null )" ]]; then
+if [[ -n "$( VBoxManage createvm --name "${vm_name}" --ostype "MacOS_64" --register 2>&1 >/dev/null )" ]]; then
     echo -e "\nError: Could not create virtual machine \"${vm_name}\"."
     echo -e "${highlight_color}Please delete exising \"${vm_name}\" VirtualBox configuration files ${warning_color}manually${default_color}.\n"
     echo -e "Error message:\n"
-    VBoxManage createvm --name "${vm_name}" --ostype "MacOS1013_64" --register 2>/dev/tty
+    VBoxManage createvm --name "${vm_name}" --ostype "MacOS_64" --register 2>/dev/tty
     exit
 fi
 }
@@ -823,7 +824,7 @@ The virtual machine may report that disk space is critically low; this is fine.
 When the bootable installer virtual disk is finished being populated, the script
 will shut down the virtual machine. After shutdown, the initial base system will
 be detached from the VM and released from VirtualBox."
-print_dimly "If the partitioning fails, exit the script by pressing CTRL-C
+print_dimly "If the partitioning fails, retry 2-3 times $kbstring or exit the script by pressing CTRL-C
 Otherwise, please wait."
 while [[ "$( VBoxManage list runningvms )" =~ \""${vm_name}"\" ]]; do sleep 2 >/dev/null 2>&1; done
 echo "Waiting for the VirtualBox GUI to shut off."
