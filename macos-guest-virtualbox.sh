@@ -50,7 +50,7 @@ ROM='%aa*%bbg%cc%dd'
 #   ioreg -l -p IODeviceTree | grep \"system-id
 SYSTEM_UUID="aabbccddeeff00112233445566778899"
 #   csrutil status
-SYSTEM_INTEGRITY_PROTECTION='10'  # '10' - enabled, '77' - disabled
+SYSTEM_INTEGRITY_PROTECTION='77'  # '10' - enabled, '77' - disabled
 
 # Additional configurations may be saved in external files and loaded with the
 # following command prior to executing the script:
@@ -799,6 +799,9 @@ for part in InstallESD.part*; do echo "Concatenating ${part}"; cat "${part}" >> 
 sed -i.bak -e "s/InstallESDDmg\.pkg/InstallESD.dmg/" -e "s/pkg\.InstallESDDmg/dmg.InstallESD/" "${install_path}InstallInfo.plist" && \
 sed -i.bak2 -e "/InstallESD\.dmg/{n;N;N;N;d;}" "${install_path}InstallInfo.plist" && \' >> "${vm_name}_bootinst.txt"
 # shut down the virtual machine
+if [[ "${SYSTEM_INTEGRITY_PROTECTION}" = 77 ]]; then
+  echo 'csrutil disable' >> "${vm_name}_bootinst.txt"
+fi
 echo 'shutdown -h now' >> "${vm_name}_bootinst.txt"
 if [[ -n $(
            2>&1 VBoxManage storageattach "${vm_name}" --storagectl SATA --port 4 \
